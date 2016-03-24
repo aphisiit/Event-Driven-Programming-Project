@@ -19,7 +19,7 @@ public class TestScreen extends Screen {
 //    private final Image bgImage;
 //    private final Image backImage;
 
-    private Root root;
+//    private Root root;
 
     public TestScreen(final ScreenStack ss){
         this.ss = ss;
