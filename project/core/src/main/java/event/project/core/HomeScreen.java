@@ -17,6 +17,7 @@ public class HomeScreen extends UIScreen {
     public static final Font TITLE_FONT = graphics().createFont("Helvetica", Font.Style.PLAIN,24);
 
     private final TestScreen testScreen;
+    private final SettingScreen settingScreen;
 
     private ScreenStack ss;
     private Root root;
@@ -24,6 +25,7 @@ public class HomeScreen extends UIScreen {
     public HomeScreen(ScreenStack ss){
         this.ss = ss;
         this.testScreen = new TestScreen(ss);
+        this.settingScreen = new SettingScreen(ss);
     }
 
     @Override
@@ -45,6 +47,12 @@ public class HomeScreen extends UIScreen {
             @Override
             public void onEmit() {
                 ss.push(testScreen);
+            }
+        }));
+        root.add(new Button("Setting").onClick(new UnitSlot() {
+            @Override
+            public void onEmit() {
+                ss.push(settingScreen);
             }
         }));
 
