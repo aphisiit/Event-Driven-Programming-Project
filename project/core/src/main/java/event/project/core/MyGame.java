@@ -1,10 +1,6 @@
 package event.project.core;
 
-import static playn.core.PlayN.*;
-
 import playn.core.Game;
-import playn.core.Image;
-import playn.core.ImageLayer;
 import playn.core.util.Clock;
 import tripleplay.game.ScreenStack;
 
@@ -20,7 +16,7 @@ public class MyGame extends Game.Default {
 
     @Override
     public void init() {
-        ss.push(new HomeScreen(ss));
+        ss.push(new StartScreen(ss));
     }
 
     @Override
