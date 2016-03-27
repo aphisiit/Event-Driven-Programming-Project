@@ -18,11 +18,14 @@ public class SettingScreen extends Screen{
     private final ImageLayer settingBG;
     private final ImageLayer backButton;
     private final ImageLayer Sound;
+    private final ImageLayer unSound;
+    private Boolean checkSound;
 
 //    Private Root root;
 
     public SettingScreen(final ScreenStack ss){
         this.ss = ss;
+        checkSound = true;
 
         Image bg = assets().getImage("Images/settingBG.png");
         settingBG = graphics().createImageLayer(bg);
@@ -33,7 +36,11 @@ public class SettingScreen extends Screen{
         Image SoundImage = assets().getImage("Images/unmute.png");
         Sound = graphics().createImageLayer(SoundImage);
 
+        final Image unSoundImage = assets().getImage("Images/mute.png");
+        unSound = graphics().createImageLayer(unSoundImage);
+
         Sound.setTranslation(75,75);
+        unSound.setTranslation(75,75);
 
         backButton.setTranslation(10,10);
         backButton.addListener(new Mouse.LayerAdapter(){
@@ -41,6 +48,19 @@ public class SettingScreen extends Screen{
             public void onMouseUp(Mouse.ButtonEvent event) {
                 ss.remove(ss.top());
             }
+        });
+        Sound.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                layer.remove(Sound);
+                layer.add(unSound);
+            }
+        });
+        unSound.addListener(new Mouse.LayerAdapter(){
+           public void onMouseUp(Mouse.ButtonEvent event){
+               layer.remove(unSound);
+               layer.add(Sound);
+           }
         });
     }
 
@@ -50,5 +70,7 @@ public class SettingScreen extends Screen{
         this.layer.add(settingBG);
         this.layer.add(backButton);
         this.layer.add(Sound);
+        this.layer.add(unSound);
     }
 }
+
