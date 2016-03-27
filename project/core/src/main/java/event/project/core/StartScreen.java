@@ -5,7 +5,6 @@ import static playn.core.PlayN.*;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Mouse;
-import playn.core.Pointer;
 import tripleplay.game.ScreenStack;
 import tripleplay.game.Screen;
 

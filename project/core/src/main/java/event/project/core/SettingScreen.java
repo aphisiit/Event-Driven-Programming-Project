@@ -5,10 +5,8 @@ import static playn.core.PlayN.*;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Mouse;
-import playn.core.Sound;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
-import tripleplay.ui.Root;
 /**
  * Created by aphis on 24-Mar-16.
  */
