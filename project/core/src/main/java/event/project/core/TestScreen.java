@@ -6,7 +6,6 @@ import playn.core.Image;
 import playn.core.ImageLayer;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
-import tripleplay.ui.Root;
 import playn.core.Mouse;
 
 /**
