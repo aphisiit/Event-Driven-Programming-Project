@@ -39,7 +39,6 @@ public class StartScreen extends Screen {
                 ss.push(settingScreen);
             }
         });
-
     }
 
     @Override
