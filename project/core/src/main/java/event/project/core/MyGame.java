@@ -21,11 +21,12 @@ public class MyGame extends Game.Default {
 
     @Override
     public void update(int delta) {
+        ss.update(delta);
     }
 
     @Override
-    public void paint(float alpha) {
-        clock.paint(alpha);
+    public void paint(float delta) {
+        clock.paint(delta);
         ss.paint(clock);
     }
 }
