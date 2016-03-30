@@ -14,18 +14,21 @@ import tripleplay.game.Screen;
 public class StartScreen extends Screen {
 
     private final ScreenStack ss;
-    private final SettingScreen settingScreen;
+//    private final SettingScreen settingScreen;
+    private final TestScreen testScreen;
     private final ImageLayer startLayer;
     private final ImageLayer startButtonLayer;
     private final ImageLayer settingButtonLayer;
 
     public StartScreen(final ScreenStack ss){
-        settingScreen = new SettingScreen(ss);
+//        settingScreen = new SettingScreen(ss);
+
+        testScreen = new TestScreen(ss);
         this.ss = ss;
 
         Image startImage = assets().getImage("images/StartScreen.png");
         Image startButton = assets().getImage("images/StartButton.png");
-        Image settingButton = assets().getImage("images/SettingButton.png");
+        final Image settingButton = assets().getImage("images/SettingButton.png");
 
         startLayer = graphics().createImageLayer(startImage);
         startButtonLayer = graphics().createImageLayer(startButton);
@@ -33,12 +36,20 @@ public class StartScreen extends Screen {
         settingButtonLayer = graphics().createImageLayer(settingButton);
         settingButtonLayer.setTranslation(436,387);
 
-        settingButtonLayer.addListener(new Mouse.LayerAdapter(){
+        startButtonLayer.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
-                ss.push(settingScreen);
+                ss.push(testScreen);
             }
         });
+
+/*        settingButtonLayer.addListener(new Mouse.LayerAdapter(){
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                ss.push(settingButtonLayer);
+            }
+        });
+*/
     }
 
     @Override
