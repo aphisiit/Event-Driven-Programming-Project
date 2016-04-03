@@ -25,8 +25,8 @@ public class MyGame extends Game.Default {
     }
 
     @Override
-    public void paint(float delta) {
-        clock.paint(delta);
+    public void paint(float alpha) {
+        clock.paint(alpha);
         ss.paint(clock);
     }
 }

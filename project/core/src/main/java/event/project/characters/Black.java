@@ -11,7 +11,7 @@ import playn.core.util.Callback;
 /**
  * Created by Administrator on 30/3/2559.
  */
-public class Zealot {
+public class Black {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
@@ -20,12 +20,14 @@ public class Zealot {
         IDLE, RUN, ATTK
     }
 
+    ;
+
     private State state = State.IDLE;
 
     private int e = 0;
     private int offset = 4;
 
-    public Zealot(final float x, final float y) {
+    public Black(final float x, final float y) {
 
         PlayN.keyboard().setListener(new Keyboard.Adapter() {
             @Override
@@ -39,7 +41,7 @@ public class Zealot {
                 }
             }
         });
-        sprite = SpriteLoader.getSprite("images/zealot.json");
+        sprite = SpriteLoader.getSprite("images/black.json");
         sprite.addCallback(new Callback<Sprite>() {
 
             @Override
