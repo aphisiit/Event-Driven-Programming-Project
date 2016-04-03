@@ -9,80 +9,87 @@ import playn.core.PlayN;
 import playn.core.util.Callback;
 
 /**
- * Created by Administrator on 30/3/2559.
+ * Created by aphis on 02-Apr-16.
  */
-public class Zealot {
+public class Zombie {
+
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
+    private float x2;
 
-    public enum State {
-        IDLE, RUN, ATTK
+    public enum State{
+        IDLE,WALK,DIE
     }
-
     private State state = State.IDLE;
+    public int e = 0;
+    public int offset = 4;
 
-    private int e = 0;
-    private int offset = 4;
-
-    public Zealot(final float x, final float y) {
-
-        PlayN.keyboard().setListener(new Keyboard.Adapter() {
+    public Zombie(final float x,final float y){
+        x2 = x;
+        PlayN.keyboard().setListener(new Keyboard.Adapter(){
             @Override
             public void onKeyUp(Keyboard.Event event) {
                 if(event.key() == Key.SPACE){
+//                    state = State.WALK;
                     switch (state){
-                        case IDLE: state = State.RUN; break;
-                        case RUN: state = State.ATTK; break;
-                        case ATTK: state = State.IDLE; break;
+                        case IDLE: state = State.WALK; break;
+                        case WALK: state = State.DIE; break;
+                        case DIE: state = State.IDLE; break;
                     }
                 }
             }
-        });
-        sprite = SpriteLoader.getSprite("images/zealot.json");
-        sprite.addCallback(new Callback<Sprite>() {
 
             @Override
-            public void onSuccess(Sprite result) {
+            public void onKeyDown(Keyboard.Event event) {
+                if(event.key() == Key.RIGHT){
+                    state = State.WALK;
+                    x2 += 1f;
+                    sprite.layer().setTranslation(x2,y);
+                }
+            }
+        });
+        sprite = SpriteLoader.getSprite("images/zombie.json");
+        sprite.addCallback(new Callback<Sprite>() {
+            @Override
+            public void onSuccess(Sprite sprite) {
                 sprite.setSprite(spriteIndex);
                 sprite.layer().setOrigin(sprite.width() / 2f,
                         sprite.height() / 2f);
-                sprite.layer().setTranslation(x, y + 13f);
+                sprite.layer().setTranslation(x , y);
                 hasLoaded = true;
             }
 
             @Override
             public void onFailure(Throwable cause) {
-                PlayN.log().error("Error loading image!", cause);
+                PlayN.log().error("Error loading image!",cause);
             }
         });
     }
-
-    public Layer layer() {
+    public Layer layer(){
         return sprite.layer();
     }
-
-    public void update(int delta) {
-        if (hasLoaded == false)
+    public void update(int delta){
+        if(hasLoaded == false){
             return;
-
+        }
         e = e + delta;
         if (e > 150) {
             switch (state) {
                 case IDLE:
                     offset = 0;
                     break;
-                case RUN:
+                case WALK:
                     offset = 4;
                     break;
-                case ATTK:
+                case DIE:
                     offset = 8;
 //                    if (spriteIndex == 10) {
 //                        state = State.IDLE;                    }
                     break;
             }
             spriteIndex = offset + ((spriteIndex + 1) % 4);
-            sprite.setSprite(spriteIndex);;
+            sprite.setSprite(spriteIndex);
             e = 0;
         }
     }

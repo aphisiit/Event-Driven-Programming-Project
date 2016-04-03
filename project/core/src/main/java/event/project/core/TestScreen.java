@@ -2,7 +2,9 @@ package event.project.core;
 
 import static playn.core.PlayN.*;
 
+import event.project.characters.Black;
 import event.project.characters.Zealot;
+import event.project.characters.Zombie;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import tripleplay.game.Screen;
@@ -16,7 +18,8 @@ public class TestScreen extends Screen {
     private final ScreenStack ss;
     private final ImageLayer bg;
     private final ImageLayer backButton;
-    private Zealot zealot;
+    private final Zombie zombie;
+//    private Black zealot;
 //    private final Image bgImage;
 //    private final Image backImage;
 
@@ -39,8 +42,7 @@ public class TestScreen extends Screen {
             }
         });
 
-
-        zealot = new Zealot(560f,400f);
+        zombie = new Zombie(100f,100f);
     }
 
     @Override
@@ -48,10 +50,10 @@ public class TestScreen extends Screen {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(backButton);
-        this.layer.add(zealot.layer());
+        this.layer.add(zombie.layer());
     }
     public void update(int delta){
         super.update(delta);
-        zealot.update(delta);
+        zombie.update(delta);
     }
 }
