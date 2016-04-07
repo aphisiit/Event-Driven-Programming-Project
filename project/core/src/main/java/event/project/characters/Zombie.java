@@ -16,7 +16,7 @@ public class Zombie {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
-    private float x2;
+    private float x2,y2;
 
     public enum State{
         IDLE,WALK,DIE
@@ -27,28 +27,8 @@ public class Zombie {
 
     public Zombie(final float x,final float y){
         x2 = x;
-        PlayN.keyboard().setListener(new Keyboard.Adapter(){
-            @Override
-            public void onKeyUp(Keyboard.Event event) {
-                if(event.key() == Key.SPACE){
-//                    state = State.WALK;
-                    switch (state){
-                        case IDLE: state = State.WALK; break;
-                        case WALK: state = State.DIE; break;
-                        case DIE: state = State.IDLE; break;
-                    }
-                }
-            }
+        y2 = y;
 
-            @Override
-            public void onKeyDown(Keyboard.Event event) {
-                if(event.key() == Key.RIGHT){
-                    state = State.WALK;
-                    x2 += 1f;
-                    sprite.layer().setTranslation(x2,y);
-                }
-            }
-        });
         sprite = SpriteLoader.getSprite("images/zombie.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
@@ -74,6 +54,28 @@ public class Zombie {
             return;
         }
         e = e + delta;
+        PlayN.keyboard().setListener(new Keyboard.Adapter(){
+            @Override
+            public void onKeyUp(Keyboard.Event event) {
+                if(event.key() == Key.SPACE){
+//                    state = State.WALK;
+                    switch (state){
+                        case IDLE: state = State.WALK; break;
+                        case WALK: state = State.DIE; break;
+                        case DIE: state = State.IDLE; break;
+                    }
+                }
+            }
+
+            @Override
+            public void onKeyDown(Keyboard.Event event) {
+                if(event.key() == Key.RIGHT){
+                    state = State.WALK;
+                    x2 += 1f;
+                    sprite.layer().setTranslation(x2,y2);
+                }
+            }
+        });
         if (e > 150) {
             switch (state) {
                 case IDLE:
