@@ -2,9 +2,7 @@ package event.project.core;
 
 import static playn.core.PlayN.*;
 
-import playn.core.Image;
-import playn.core.ImageLayer;
-import playn.core.Mouse;
+import playn.core.*;
 import tripleplay.game.ScreenStack;
 import tripleplay.game.Screen;
 
@@ -58,5 +56,13 @@ public class StartScreen extends Screen {
         this.layer.add(startLayer);
         this.layer.add(startButtonLayer);
         this.layer.add(settingButtonLayer);
+        keyboard().setListener(new Keyboard.Adapter(){
+            @Override
+            public void onKeyUp(Keyboard.Event event) {
+                if(event.key() == Key.ENTER){
+                    ss.push(testScreen);
+                }
+            }
+        });
     }
 }
