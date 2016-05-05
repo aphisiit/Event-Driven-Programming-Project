@@ -13,7 +13,7 @@ public class StartScreen extends Screen {
 
     private final ScreenStack ss;
 //    private final SettingScreen settingScreen;
-    private final TestScreen testScreen;
+    private final GameScreen gameScreen;
     private final ImageLayer startLayer;
     private final ImageLayer startButtonLayer;
     private final ImageLayer settingButtonLayer;
@@ -21,7 +21,7 @@ public class StartScreen extends Screen {
     public StartScreen(final ScreenStack ss){
 //        settingScreen = new SettingScreen(ss);
 
-        testScreen = new TestScreen(ss);
+        gameScreen = new GameScreen(ss);
         this.ss = ss;
 
         Image startImage = assets().getImage("images/StartScreen.png");
@@ -37,7 +37,7 @@ public class StartScreen extends Screen {
         startButtonLayer.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
-                ss.push(testScreen);
+                ss.push(gameScreen);
             }
         });
 
@@ -60,7 +60,7 @@ public class StartScreen extends Screen {
             @Override
             public void onKeyUp(Keyboard.Event event) {
                 if(event.key() == Key.ENTER){
-                    ss.push(testScreen);
+                    ss.push(gameScreen);
                 }
             }
         });
