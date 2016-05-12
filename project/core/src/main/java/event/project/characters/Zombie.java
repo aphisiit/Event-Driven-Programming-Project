@@ -21,7 +21,6 @@ public class Zombie {
     private Sprite sprite;
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
-    private float x2,y2;
     private Body body;
 
     public enum State{
@@ -32,12 +31,6 @@ public class Zombie {
     public int offset = 4;
 
     public Zombie(final World world,final float x,final float y){
-        x2 = x;
-        y2 = y;
-
-        System.out.println("Zombie X = "+x);
-        System.out.println("Zombie y = "+y);
-
         sprite = SpriteLoader.getSprite("images/zombie.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
@@ -67,29 +60,60 @@ public class Zombie {
         if(hasLoaded == false){
             return;
         }
-        e = e + delta;
+
         PlayN.keyboard().setListener(new Keyboard.Adapter(){
-            @Override
+/*            @Override
             public void onKeyUp(Keyboard.Event event) {
                 if(event.key() == Key.SPACE){
-//                    state = State.WALK;
                     switch (state){
                         case IDLE: state = State.WALK; break;
                         case WALK: state = State.DIE; break;
                         case DIE: state = State.IDLE; break;
                     }
+                }else if(event.key() == Key.LEFT){
+                    state = State.WALK;
+                    body.applyForce(new Vec2(-100f,0f),body.getPosition());
+                }else if(event.key() == Key.RIGHT){
+                    state = State.WALK;
+                    body.applyForce(new Vec2(100f,0f),body.getPosition());
+                }
+                else if (event.key() == Key.UP){
+                    state = State.IDLE;
+                    body.applyForce(new Vec2(10f,-100f),body.getPosition());
                 }
             }
-
+*/
             @Override
             public void onKeyDown(Keyboard.Event event) {
-                if(event.key() == Key.RIGHT){
+                if(event.key() == Key.SPACE) {
+                    switch (state) {
+                        case IDLE:
+                            state = State.WALK;
+                            break;
+                        case WALK:
+                            state = State.DIE;
+                            break;
+                        case DIE:
+                            state = State.IDLE;
+                            break;
+                    }
+                }else if(event.key() == Key.LEFT){
+                    System.out.println("LEFT");
                     state = State.WALK;
-                    x2 += 26.6666;
-                    sprite.layer().setTranslation(x2,y2);
+                    body.applyForce(new Vec2(-100f,0f),body.getPosition());
+                }else if(event.key() == Key.RIGHT){
+                    System.out.println("RIGHT");
+                    state = State.WALK;
+                    body.applyForce(new Vec2(100f,0f),body.getPosition());
+                }else if (event.key() == Key.UP){
+                    System.out.println("UP");
+                    state = State.IDLE;
+                    body.applyForce(new Vec2(10f,-800f),body.getPosition());
                 }
             }
         });
+
+        e = e + delta;
         if (e > 150) {
             switch (state) {
                 case IDLE:
@@ -110,12 +134,14 @@ public class Zombie {
         }
     }
     private Body initPhysicsBody(World world,float x,float y){
-        System.out.println("initPhysic X = "+x);
-        System.out.println("initPhysic Y = "+y);
+
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
         bodyDef.position = new Vec2(0,0);
         Body body = world.createBody(bodyDef);
+
+        GameScreen.bodies.put(body, "test_" + GameScreen.count);
+        GameScreen.count++;
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(56 * GameScreen.M_PER_PIXEL / 2,
@@ -138,5 +164,6 @@ public class Zombie {
                 body.getPosition().x / GameScreen.M_PER_PIXEL - 10,
                 body.getPosition().y / GameScreen.M_PER_PIXEL
         );
+        //sprite.layer().setRotation(body.getAngle());
     }
 }
