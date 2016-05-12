@@ -165,9 +165,9 @@ public class GameScreen extends Screen {
 
     public void update(int delta){
         super.update(delta);
-        world.step(0.033f,10,10);
         for (int i = 0; i < index ; i++)
             zombieArrayList.get(i).update(delta);
+        world.step(0.033f,10,10);
     }
 
     @Override

@@ -56,6 +56,30 @@ public class Zombie {
     public Layer layer(){
         return sprite.layer();
     }
+    private Body initPhysicsBody(World world,float x,float y){
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DYNAMIC;
+        bodyDef.position = new Vec2(0,0);
+        Body body = world.createBody(bodyDef);
+
+        GameScreen.bodies.put(body, "test_" + GameScreen.count);
+        GameScreen.count++;
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(56 * GameScreen.M_PER_PIXEL / 2,
+                sprite.layer().height() * GameScreen.M_PER_PIXEL / 2);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 80.77f;
+        fixtureDef.friction = 0.1f;
+        fixtureDef.restitution = 0.35f;
+        body.createFixture(fixtureDef);
+
+        body.setLinearDamping(0.2f);
+        body.setTransform(new Vec2(x,y), 0f);
+        return body;
+    }
     public void update(int delta){
         if(hasLoaded == false){
             return;
@@ -101,6 +125,7 @@ public class Zombie {
                     System.out.println("LEFT");
                     state = State.WALK;
                     body.applyForce(new Vec2(-100f,0f),body.getPosition());
+                    //body.applyLinearImpulse(new Vec2(0f,0f),new Vec2(100f,100f));
                 }else if(event.key() == Key.RIGHT){
                     System.out.println("RIGHT");
                     state = State.WALK;
@@ -108,7 +133,7 @@ public class Zombie {
                 }else if (event.key() == Key.UP){
                     System.out.println("UP");
                     state = State.IDLE;
-                    body.applyForce(new Vec2(10f,-800f),body.getPosition());
+                    body.applyForce(new Vec2(-10f,-800f),body.getPosition());
                 }
             }
         });
@@ -132,31 +157,6 @@ public class Zombie {
             sprite.setSprite(spriteIndex);
             e = 0;
         }
-    }
-    private Body initPhysicsBody(World world,float x,float y){
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DYNAMIC;
-        bodyDef.position = new Vec2(0,0);
-        Body body = world.createBody(bodyDef);
-
-        GameScreen.bodies.put(body, "test_" + GameScreen.count);
-        GameScreen.count++;
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(56 * GameScreen.M_PER_PIXEL / 2,
-                sprite.layer().height() * GameScreen.M_PER_PIXEL / 2);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 80.77f;
-        fixtureDef.friction = 0.1f;
-        fixtureDef.restitution = 0.35f;
-        body.createFixture(fixtureDef);
-
-        body.setLinearDamping(0.2f);
-        body.setTransform(new Vec2(x,y), 0f);
-
-        return body;
     }
     public void paint(Clock clock){
         if(!hasLoaded) return;
