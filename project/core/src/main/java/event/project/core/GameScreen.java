@@ -54,7 +54,7 @@ public class GameScreen extends Screen {
     public GameScreen(final ScreenStack ss){
         this.ss = ss;
 
-        graphics().rootLayer().clear();
+        //graphics().rootLayer().clear();
         zombieArrayList = new ArrayList<Zombie>();
 
         Vec2 gravity = new Vec2(0.0f,9.8f);
@@ -80,12 +80,16 @@ public class GameScreen extends Screen {
             }
         });
 
+        //zombieArrayList.add(index, new Zombie(world, 100, 100));
+        //graphics().rootLayer().add(zombieArrayList.get(index).layer());
+        //index++;
+
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
-                if(bodies.get(a) != null){
+                if(bodies.get(b) == "coin"){
                     score += 10;
                     debugString = bodies.get(a) + " contacted with " + bodies.get(b);
                     getDebugStringCoin = "Score : " + score;
@@ -124,6 +128,8 @@ public class GameScreen extends Screen {
                 }
             }
         });
+
+
     }
 
     @Override
@@ -161,6 +167,8 @@ public class GameScreen extends Screen {
         coinShape.setRadius(0.45f);
         coinShape.m_p.set(12.5f, 9.5f);
         coinBody.createFixture(coinShape, 0.0f);
+
+        bodies.put(coinBody,"coin");
     }
 
     public void update(int delta){

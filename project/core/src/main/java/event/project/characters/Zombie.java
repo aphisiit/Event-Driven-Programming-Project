@@ -63,7 +63,7 @@ public class Zombie {
         bodyDef.position = new Vec2(0,0);
         Body body = world.createBody(bodyDef);
 
-        GameScreen.bodies.put(body, "test_" + GameScreen.count);
+        GameScreen.bodies.put(body, "zombie_" + GameScreen.count);
         GameScreen.count++;
 
         PolygonShape shape = new PolygonShape();
@@ -71,9 +71,9 @@ public class Zombie {
                 sprite.layer().height() * GameScreen.M_PER_PIXEL / 2);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 80.77f;
-        fixtureDef.friction = 0.1f;
-        fixtureDef.restitution = 0.35f;
+        fixtureDef.density = 0.4f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0.0f;
         body.createFixture(fixtureDef);
 
         body.setLinearDamping(0.2f);
@@ -124,16 +124,27 @@ public class Zombie {
                 }else if(event.key() == Key.LEFT){
                     System.out.println("LEFT");
                     state = State.WALK;
-                    body.applyForce(new Vec2(-100f,0f),body.getPosition());
-                    //body.applyLinearImpulse(new Vec2(0f,0f),new Vec2(100f,100f));
+                    body.applyForce(new Vec2(-50f,0f),body.getPosition());
                 }else if(event.key() == Key.RIGHT){
                     System.out.println("RIGHT");
                     state = State.WALK;
-                    body.applyForce(new Vec2(100f,0f),body.getPosition());
+                    body.applyForce(new Vec2(50f,0f),body.getPosition());
                 }else if (event.key() == Key.UP){
                     System.out.println("UP");
                     state = State.IDLE;
-                    body.applyForce(new Vec2(-10f,-800f),body.getPosition());
+                    body.applyForce(new Vec2(0f,-475f),body.getPosition());
+                    //body.applyLinearImpulse(new Vec2(0f,-500f),new Vec2(0f,-500f));
+                }
+            }
+
+            @Override
+            public void onKeyUp(Keyboard.Event event) {
+                if(event.key() == Key.LEFT){
+                    state = State.IDLE;
+                }else if(event.key() == Key.RIGHT){
+                    state = State.IDLE;
+                }else if (event.key() == Key.UP){
+                    state = State.IDLE;
                 }
             }
         });
