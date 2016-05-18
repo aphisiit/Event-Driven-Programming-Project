@@ -72,7 +72,7 @@ public class Zombie {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.4f;
-        fixtureDef.friction = 0.5f;
+        fixtureDef.friction = 0.75f;
         fixtureDef.restitution = 0.0f;
         body.createFixture(fixtureDef);
 
@@ -124,12 +124,13 @@ public class Zombie {
                 }else if(event.key() == Key.LEFT){
                     System.out.println("LEFT");
                     state = State.WALK;
-                    body.applyForce(new Vec2(-50f,0f),body.getPosition());
+                    body.applyForce(new Vec2(-75f,0f),body.getPosition());
                 }else if(event.key() == Key.RIGHT){
                     System.out.println("RIGHT");
                     state = State.WALK;
-                    body.applyForce(new Vec2(50f,0f),body.getPosition());
-                }else if (event.key() == Key.UP){
+                    body.applyForce(new Vec2(75f,0f),body.getPosition());
+                }
+                else if (event.key() == Key.UP){
                     System.out.println("UP");
                     state = State.IDLE;
                     body.applyForce(new Vec2(0f,-475f),body.getPosition());

@@ -9,8 +9,6 @@ import playn.core.Sound;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
-import java.util.Stack;
-
 /**
  * Created by aphis on 24-Mar-16.
  */
@@ -21,14 +19,14 @@ public class SettingScreen extends Screen{
     private final ImageLayer backButton;
     private final ImageLayer SoundLayer;
     private final ImageLayer unSound;
-    private final Sound sound;
+   // private final Sound sound;
 
     public SettingScreen(final ScreenStack ss){
         this.ss = ss;
 
-        sound = assets().getSound("sound/lean_on");
-        sound.setLooping(true);
-        sound.play();
+        //sound = assets().getSound("sound/lean_on");
+        //sound.setLooping(true);
+       //sound.play();
 
         Image bg = assets().getImage("Images/settingBG.png");
         settingBG = graphics().createImageLayer(bg);
@@ -55,14 +53,14 @@ public class SettingScreen extends Screen{
         SoundLayer.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
-                sound.setVolume(0.0f);
+                //sound.setVolume(0.0f);
                 layer.remove(SoundLayer);
                 layer.add(unSound);
             }
         });
         unSound.addListener(new Mouse.LayerAdapter(){
            public void onMouseUp(Mouse.ButtonEvent event){
-               sound.setVolume(1.0f);
+               //sound.setVolume(1.0f);
                layer.remove(unSound);
                layer.add(SoundLayer);
            }
