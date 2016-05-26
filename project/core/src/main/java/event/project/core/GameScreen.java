@@ -2,6 +2,7 @@ package event.project.core;
 
 import static playn.core.PlayN.*;
 
+import event.project.characters.Boy;
 import event.project.characters.Zombie;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
@@ -9,6 +10,7 @@ import org.jbox2d.callbacks.DebugDraw;
 import org.jbox2d.collision.Manifold;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.EdgeShape;
+import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
@@ -31,8 +33,12 @@ public class GameScreen extends Screen {
     private final ScreenStack ss;
     private final ImageLayer bg;
     private final ImageLayer backButton;
-    private final ImageLayer coinLayer;
-    private Zombie zombie;
+    private ImageLayer heart;
+    //private final ImageLayer coinLayer;
+    private Zombie zombie1;
+//    private Zombie zombie2;
+
+    private Boy boy;
 
     public static float M_PER_PIXEL = 1 / 26.666667f;
     private static int width = 24;
@@ -41,36 +47,47 @@ public class GameScreen extends Screen {
     private DebugDrawBox2D debugDrawBox2D;
 
     private int index = 0;
+    private int zombieAttack = 0;
     public static int count = 0;
     private int score = 0;
-    private List<Zombie> zombieArrayList;// = new ArrayList<Zombie>();
+    //private List<Zombie> zombieArrayList;// = new ArrayList<Zombie>();
     public static HashMap<Body,String> bodies = new HashMap<Body, String>();
     private String debugString = "";
     private String getDebugStringCoin = "";
+    private boolean destroy = false;
 
+    private enum Character{
+        boy,zombie;
+    }
+
+    private Character character;
     private World world;
 
 
     public GameScreen(final ScreenStack ss){
         this.ss = ss;
 
-        //graphics().rootLayer().clear();
-        zombieArrayList = new ArrayList<Zombie>();
+        graphics().rootLayer().clear();
+        //zombieArrayList = new ArrayList<Zombie>();
 
         Vec2 gravity = new Vec2(0.0f,9.8f);
         world = new World(gravity);
         world.setWarmStarting(true);
         world.setAutoClearForces(true);
 
-        Image bgImage = assets().getImage("images/bg.png");
+        Image bgImage = assets().getImage("images/gameScreenBG.png");
         bg = graphics().createImageLayer(bgImage);
 
         Image backImage= assets().getImage("images/back_button.png");
         backButton = graphics().createImageLayer(backImage);
 
-        Image coin = assets().getImage("images/coin.png");
-        coinLayer = graphics().createImageLayer(coin);
-        coinLayer.setTranslation(320,240f);
+        //Image coin = assets().getImage("images/coin.png");
+        //coinLayer = graphics().createImageLayer(coin);
+        //coinLayer.setTranslation(320,240f);
+
+        Image heartImage = assets().getImage("images/heart1.png");
+        heart = graphics().createImageLayer(heartImage);
+        heart.setTranslation(100,10);
 
         backButton.setTranslation(10,10);
         backButton.addListener(new Mouse.LayerAdapter(){
@@ -80,21 +97,112 @@ public class GameScreen extends Screen {
             }
         });
 
-        //zombieArrayList.add(index, new Zombie(world, 100, 100));
-        //graphics().rootLayer().add(zombieArrayList.get(index).layer());
-        //index++;
+        //Body coinBody = world.createBody(new BodyDef());
+        //CircleShape coinShape = new CircleShape();
+        //coinShape.setRadius(0.45f);
+        //coinShape.m_p.set(12.5f, 9.5f);
+        //coinBody.createFixture(coinShape, 0.0f);
+
+        //bodies.put(coinBody,"coin");
+
+        boy = new Boy(world,100,100);
+
+        zombie1 = new Zombie(world,350,100);
+
+        //zombie2 = new Zombie(world,400,100);
+
+
+
+        /*
+        mouse().setListener(new Mouse.Adapter() {
+            @Override
+            public void onMouseUp(Mouse.ButtonEvent event) {
+                zombieArrayList.add(index, new Zombie(world, event.x(), event.y()));
+                //layer.add(zombieArrayList.get(index).layer());
+                index++;
+
+                for (int i = 0; i < index; i++) {
+                    //    this.layer.add(zombieArrayList.get(i).layer());
+                    graphics().rootLayer().add(zombieArrayList.get(i).layer());
+                }
+            }
+        });
+*/
+
+    }
+
+    @Override
+    public void wasShown() {
+        super.wasShown();
+        this.layer.add(bg);
+        this.layer.add(backButton);
+        this.layer.add(heart);
+        this.layer.add(boy.layer());
+        this.layer.add(zombie1.layer());
+        //this.layer.add(zombie2.layer());
 
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
-                if(bodies.get(b) == "coin"){
-                    score += 10;
-                    debugString = bodies.get(a) + " contacted with " + bodies.get(b);
-                    getDebugStringCoin = "Score : " + score;
-                    b.applyForce(new Vec2(80f,-100f),b.getPosition());
+
+                if(contact.getFixtureA().getBody() == boy.getBody() &&
+                        contact.getFixtureB().getBody() == zombie1.getBody()
+                        || contact.getFixtureB().getBody() == boy.getBody() &&
+                        contact.getFixtureA().getBody() == zombie1.getBody()){
+                    zombie1.state = Zombie.State.ATTK;
+                    if(boy.state == Boy.State.ATTK){
+                        System.out.println("Boy is Attack.");
+                        System.out.println("Count ATTK = " + zombie1.countATTK);
+                        zombie1.countATTK++;
+                        debugString = "Boy is Attack Zombie.";
+                        getDebugStringCoin = "Score : " + score;
+                        zombie1.state = Zombie.State.HIT;
+                        if(zombie1.countATTK >= 2){
+                            zombie1.layer().destroy();
+                            character = Character.zombie;
+                            destroy = true;
+                            score += 10;
+                            getDebugStringCoin = "Score : " + score;
+                        }
+                        //b.applyForce(new Vec2(80f,-100f),b.getPosition());
+                        //zombie1.layer().destroy(); //Destroy zombie
+                        //character = Character.zombie;
+                        //destroy = true;
+
+                    }
+                    else if(zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.IDLE ||
+                            zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.RUN){
+                        System.out.println("Zombie is Attack Boy");
+                        zombieAttack++;
+                        System.out.println("ZombieAttack = " + zombieAttack);
+                        if(a == boy.getBody()){
+                            a.applyForce(new Vec2(-100,0),a.getPosition());
+                        }
+                        else if(b == boy.getBody()){
+                            b.applyForce(new Vec2(-100,0),b.getPosition());
+                        }
+                    }
                 }
+/*                else if(contact.getFixtureA().getBody() == boy.getBody() &&
+                        contact.getFixtureB().getBody() == zombie2.getBody()
+                        || contact.getFixtureB().getBody() == boy.getBody() &&
+                        contact.getFixtureA().getBody() == zombie2.getBody()){
+                    zombie2.state = Zombie.State.ATTK;
+                    if(boy.state == Boy.State.ATTK){
+                        System.out.println("Boy is Attack.");
+                        score += 10;
+                        debugString = bodies.get(a) + " contacted with " + bodies.get(b);
+                        getDebugStringCoin = "Score : " + score;
+                        b.applyForce(new Vec2(80f,-100f),b.getPosition());
+                        zombie2.layer().destroy(); //Destroy zombie
+                        destroy = true;
+                        character = Character.zombie;
+                    }
+                }
+*/
+                System.out.println(bodies.get(a) + " Attack " + bodies.get(b));
                 System.out.println("debugString : " + debugString);
                 System.out.println("getDebugStringCoin : " + getDebugStringCoin);
             }
@@ -114,30 +222,6 @@ public class GameScreen extends Screen {
 
             }
         });
-
-        mouse().setListener(new Mouse.Adapter() {
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event) {
-                zombieArrayList.add(index, new Zombie(world, event.x(), event.y()));
-                //layer.add(zombieArrayList.get(index).layer());
-                index++;
-
-                for (int i = 0; i < index; i++) {
-                    //    this.layer.add(zombieArrayList.get(i).layer());
-                    graphics().rootLayer().add(zombieArrayList.get(i).layer());
-                }
-            }
-        });
-
-
-    }
-
-    @Override
-    public void wasShown() {
-        super.wasShown();
-        this.layer.add(bg);
-        this.layer.add(backButton);
-        this.layer.add(coinLayer);
 
         if (showDedugDraw) {
             CanvasImage image = graphics().createImage(
@@ -161,21 +245,41 @@ public class GameScreen extends Screen {
         EdgeShape groundShape = new EdgeShape();
         groundShape.set(new Vec2(0, height / 1.25f), new Vec2(width, height / 1.25f));
         ground.createFixture(groundShape, 0.0f);
+        bodies.put(ground,"Ground");
 
-        Body coinBody = world.createBody(new BodyDef());
-        CircleShape coinShape = new CircleShape();
-        coinShape.setRadius(0.45f);
-        coinShape.m_p.set(12.5f, 9.5f);
-        coinBody.createFixture(coinShape, 0.0f);
+        Body leftGround = world.createBody(new BodyDef());
+        EdgeShape leftShape = new EdgeShape();
+        leftShape.set(new Vec2(0, 0), new Vec2(0, height));
+        leftGround.createFixture(leftShape, 0.0f);
+        bodies.put(leftGround,"Left Ground");
 
-        bodies.put(coinBody,"coin");
+        //Body coinBody = world.createBody(new BodyDef());
+        //CircleShape coinShape = new CircleShape();
+        //coinShape.setRadius(0.45f);
+        //coinShape.m_p.set(12.5f, 9.5f);
+        //coinBody.createFixture(coinShape, 0.0f);
+
+        //bodies.put(coinBody,"coin");
     }
 
     public void update(int delta){
         super.update(delta);
-        for (int i = 0; i < index ; i++)
-            zombieArrayList.get(i).update(delta);
+        //for (int i = 0; i < index ; i++)
+        //    zombieArrayList.get(i).update(delta);
+        zombie1.update(delta);
+        boy.update(delta);
+
         world.step(0.033f,10,10);
+
+        if(destroy == true){
+            switch (character){
+                case zombie: world.destroyBody(zombie1.getBody());
+                    break;
+                case boy: world.destroyBody(boy.getBody());
+                    break;
+            }
+        }
+
     }
 
     @Override
@@ -188,7 +292,10 @@ public class GameScreen extends Screen {
             debugDrawBox2D.getCanvas().drawText(getDebugStringCoin,100f,100f);
             world.drawDebugData();
         }
-        for (int i = 0; i < index; i++)
-            zombieArrayList.get(i).paint(clock);
+        //for (int i = 0; i < index; i++)
+        //    zombieArrayList.get(i).paint(clock);
+        zombie1.paint(clock);
+       // zombie2.paint(clock);
+        boy.paint(clock);
     }
 }

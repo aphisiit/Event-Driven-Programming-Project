@@ -82,7 +82,7 @@ public class Zealot {
                     break;
             }
             spriteIndex = offset + ((spriteIndex + 1) % 4);
-            sprite.setSprite(spriteIndex);;
+            sprite.setSprite(spriteIndex);
             e = 0;
         }
     }
