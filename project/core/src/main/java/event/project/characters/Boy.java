@@ -1,6 +1,7 @@
 package event.project.characters;
 
 import event.project.core.GameScreen;
+import event.project.item.Bullet;
 import event.project.sprite.Sprite;
 import event.project.sprite.SpriteLoader;
 import org.jbox2d.collision.shapes.PolygonShape;
@@ -13,6 +14,9 @@ import playn.core.PlayN;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by aphis on 02-Apr-16.
  */
@@ -22,20 +26,36 @@ public class Boy {
     private int spriteIndex = 0;
     private boolean hasLoaded = false;
     private Body body;
+    private boolean hasGun = false;
 
     public enum State{
-        IDLE,RUN,JUMP,ATTK;
+        IDLE,RUN,JUMP,ATTK,IDLEG,RUNG,JUMPG,ATTKG
     }
     public enum CheckKey{
-        RIGHT,LEFT;
+        RIGHT,LEFT
     }
     private CheckKey checkKey = CheckKey.RIGHT;
-    public State state = State.IDLE;
+    public State state; // = State.IDLE;
     public int e = 0;
     public int offset = 4;
 
-    public Boy(final World world,final float x,final float y){
-        sprite = SpriteLoader.getSprite("images/Boy.json");
+    private World world;
+    private GameScreen gameScreen = new GameScreen();
+
+    public List<Bullet> bulletList;
+
+
+    public Boy(final World world, final float x, final float y, boolean hasGun){
+        this.hasGun = hasGun;
+        this.world = world;
+        bulletList = new ArrayList<Bullet>();
+
+        if(!hasGun)
+            state = State.IDLE;
+        else
+            state = State.IDLEG;
+
+        sprite = SpriteLoader.getSprite("images/test.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
             public void onSuccess(Sprite sprite) {
@@ -89,46 +109,6 @@ public class Boy {
             return;
         }
 
-        PlayN.keyboard().setListener(new Keyboard.Adapter(){
-            @Override
-            public void onKeyDown(Keyboard.Event event) {
-                if(event.key() == Key.A){
-                    checkKey = CheckKey.LEFT;
-                    System.out.println("LEFT " + checkKey);
-                    state = State.RUN;
-                    walk();
-                }else if(event.key() == Key.D){
-                    checkKey = CheckKey.RIGHT;
-                    System.out.println("RIGHT " + checkKey);
-                    state = State.RUN;
-                    walk();
-                }else if(event.key() == Key.W) {
-                    state = State.JUMP;
-                    body.applyForce(new Vec2(0f, -500f), body.getPosition());
-                }else if(event.key() == Key.S){
-                    if (checkKey == CheckKey.LEFT)
-                        state = State.IDLE;
-                    else
-                        state = State.IDLE;
-                    System.out.println("Jump" + checkKey);
-                    body.applyForce(new Vec2(0f, 500f), body.getPosition());
-                }else if (event.key() == Key.J){
-                    System.out.println("ATTK" + checkKey);
-                    if(checkKey == CheckKey.LEFT)
-                        state = State.ATTK;
-                    else
-                        state = State.ATTK;
-                    body.applyForce(new Vec2(50f,0f),body.getPosition());
-                    //body.applyLinearImpulse(new Vec2(0f,-500f),new Vec2(0f,-500f));
-                }
-            }
-
-            @Override
-            public void onKeyUp(Keyboard.Event event) {
-                state = State.IDLE;
-            }
-        });
-
         e = e + delta;
         if (e > 150) {
             switch (state) {
@@ -143,19 +123,111 @@ public class Boy {
                     break;
                 case JUMP:
                     offset = 12;
-                    if(spriteIndex == 13){
-                        state = State.IDLE;
-                    }
+                    break;
+                case IDLEG:
+                    offset = 16;
+                    break;
+                case RUNG:
+                    offset = 20;
+                    break;
+                case ATTKG:
+                    offset = 24;
+                    break;
+                case JUMPG:
+                    offset = 28;
                     break;
             }
-/*            if(state == State.IDLE | state == State.IDLE)
-                spriteIndex = offset + ((spriteIndex + 1) % 5);
-                */
             spriteIndex = offset + ((spriteIndex + 1) % 4);
 
             sprite.setSprite(spriteIndex);
             e = 0;
         }
+
+        if(!hasGun){
+            PlayN.keyboard().setListener(new Keyboard.Adapter(){
+                @Override
+                public void onKeyDown(Keyboard.Event event) {
+                    if(event.key() == Key.A){
+                        checkKey = CheckKey.LEFT;
+                        System.out.println("LEFT " + checkKey);
+                        state = State.RUN;
+                        walk();
+                    }else if(event.key() == Key.D){
+                        checkKey = CheckKey.RIGHT;
+                        System.out.println("RIGHT " + checkKey);
+                        state = State.RUN;
+                        walk();
+                    }else if(event.key() == Key.W) {
+                        state = State.JUMP;
+                        body.applyForce(new Vec2(0f, -500f), body.getPosition());
+                    }else if(event.key() == Key.S){
+                        if (checkKey == CheckKey.LEFT)
+                            state = State.IDLE;
+                        else
+                            state = State.IDLE;
+                        System.out.println("Jump" + checkKey);
+                        body.applyForce(new Vec2(0f, 500f), body.getPosition());
+                    }else if (event.key() == Key.J){
+                        System.out.println("ATTK" + checkKey);
+                        if(checkKey == CheckKey.LEFT)
+                            state = State.ATTK;
+                        else
+                            state = State.ATTK;
+                        body.applyForce(new Vec2(25f,0f),body.getPosition());
+                        //body.applyLinearImpulse(new Vec2(0f,-500f),new Vec2(0f,-500f));
+                    }
+                }
+
+                @Override
+                public void onKeyUp(Keyboard.Event event) {
+                    state = State.IDLE;
+                }
+            });
+
+
+        }
+        else{
+            PlayN.keyboard().setListener(new Keyboard.Adapter(){
+                @Override
+                public void onKeyDown(Keyboard.Event event) {
+                    if(event.key() == Key.A){
+                        checkKey = CheckKey.LEFT;
+                        System.out.println("LEFT " + checkKey);
+                        state = State.RUNG;
+                        walk();
+                    }else if(event.key() == Key.D){
+                        checkKey = CheckKey.RIGHT;
+                        System.out.println("RIGHT " + checkKey);
+                        state = State.RUNG;
+                        walk();
+                    }else if(event.key() == Key.W) {
+                        state = State.JUMPG;
+                        body.applyForce(new Vec2(0f, -500f), body.getPosition());
+                    }else if(event.key() == Key.S){
+                        if (checkKey == CheckKey.LEFT)
+                            state = State.IDLEG;
+                        else
+                            state = State.IDLEG;
+                        System.out.println("Jump" + checkKey);
+                        body.applyForce(new Vec2(0f, 500f), body.getPosition());
+                    }else if (event.key() == Key.J){
+                        System.out.println("ATTK" + checkKey);
+                        state = State.ATTKG;
+
+                        Bullet bullet = new Bullet(world,(body.getPosition().x + 1.5f ) / GameScreen.M_PER_PIXEL,
+                                body.getPosition().y  / GameScreen.M_PER_PIXEL);
+
+                        gameScreen.addBullet(bullet);
+                    }
+                }
+
+                @Override
+                public void onKeyUp(Keyboard.Event event) {
+                    state = State.IDLEG;
+                }
+            });
+        }
+
     }
     public void paint(Clock clock){
         if(!hasLoaded) return;
@@ -167,6 +239,8 @@ public class Boy {
             case RUN:
                 walk();
                 break;
+            case RUNG:
+                walk();
         }
         //sprite.layer().setRotation(body.getAngle());
     }
@@ -182,5 +256,9 @@ public class Boy {
 
     public Body getBody() {
         return body;
+    }
+
+    public void updateHasGun(boolean e){
+        hasGun = e;
     }
 }

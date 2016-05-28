@@ -3,20 +3,16 @@ package event.project.core;
 import static playn.core.PlayN.*;
 
 import event.project.characters.Boy;
-import event.project.characters.BoyGun;
 import event.project.characters.Zombie;
 import event.project.item.Bullet;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.callbacks.DebugDraw;
 import org.jbox2d.collision.Manifold;
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.EdgeShape;
-import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 import playn.core.*;
@@ -43,7 +39,11 @@ public class GameScreen extends Screen {
     private Zombie zombie1;
 //    private Zombie zombie2;
 
-    private BoyGun boy;
+    private Boy boyGun;
+    //private BoyGun boyGun;
+    //private Boy boy;
+    private boolean hasGun = false;
+    //private B
 
     public static float M_PER_PIXEL = 1 / 26.666667f;
     private static int width = 24;
@@ -74,8 +74,6 @@ public class GameScreen extends Screen {
     private static List<Bullet> bulletList;
     private static List<Bullet> bulletDestroy;
     public GroupLayer bulletGroup = graphics().createGroupLayer();
-
-    Bullet bullet1;
 
     public GameScreen(){
         ss = new ScreenStack();
@@ -150,22 +148,9 @@ public class GameScreen extends Screen {
             }
         });
 
-        //Body coinBody = world.createBody(new BodyDef());
-        //CircleShape coinShape = new CircleShape();
-        //coinShape.setRadius(0.45f);
-        //coinShape.m_p.set(12.5f, 9.5f);
-        //coinBody.createFixture(coinShape, 0.0f);
+        boyGun = new Boy(world,100,100,false);
 
-        //bodies.put(coinBody,"coin");
-
-        boy = new BoyGun(world,100,100);
-
-        zombie1 = new Zombie(world,350,100);
-
-
-        //bullet1 = new Bullet(world,200,0);
-
-
+        zombie1 = new Zombie(world,500,100);
 
         bulletList = new ArrayList<Bullet>();
         bulletDestroy = new ArrayList<Bullet>();
@@ -212,12 +197,12 @@ public class GameScreen extends Screen {
                     }
                 }
 
-                if(contact.getFixtureA().getBody() == boy.getBody() &&
+                if(contact.getFixtureA().getBody() == boyGun.getBody() &&
                         contact.getFixtureB().getBody() == zombie1.getBody()
-                        || contact.getFixtureB().getBody() == boy.getBody() &&
+                        || contact.getFixtureB().getBody() == boyGun.getBody() &&
                         contact.getFixtureA().getBody() == zombie1.getBody()){
                     zombie1.state = Zombie.State.ATTK;
-                    if(boy.state == BoyGun.State.ATTK){
+                    if(boyGun.state == Boy.State.ATTK){
                         System.out.println("Boy is Attack.");
                         System.out.println("Count ATTK = " + zombie1.countATTK);
                         zombie1.countATTK++;
@@ -232,14 +217,15 @@ public class GameScreen extends Screen {
                             score += 10;
                             getDebugStringCoin = "Score : " + score;
                         }
+                        //boyGun.updateHasGun(true);
                         //b.applyForce(new Vec2(80f,-100f),b.getPosition());
                         //zombie1.layer().destroy(); //Destroy zombie
                         //character = Character.zombie;
                         //destroy = true;
 
                     }
-                    else if(zombie1.state == Zombie.State.ATTK && boy.state == BoyGun.State.IDLE ||
-                            zombie1.state == Zombie.State.ATTK && boy.state == BoyGun.State.RUN){
+                    else if(zombie1.state == Zombie.State.ATTK && boyGun.state == Boy.State.IDLE ||
+                            zombie1.state == Zombie.State.ATTK && boyGun.state == Boy.State.RUN){
                         System.out.println("Zombie is Attack Boy");
                         zombieAttack++;
                         System.out.println("ZombieAttack = " + zombieAttack);
@@ -297,12 +283,10 @@ public class GameScreen extends Screen {
         super.wasShown();
         this.layer.add(bg);
         this.layer.add(backButton);
-        this.layer.add(boy.layer());
-        this.layer.add(zombie1.layer());
-        this.layer.add(bulletGroup);
-        //this.layer.add(zombie2.layer());
 
-        //this.layer.add(bullet1.layer());
+        this.layer.add(zombie1.layer());
+        this.layer.add(boyGun.layer());
+        this.layer.add(bulletGroup);
 
 
         if (showDedugDraw) {
@@ -333,7 +317,7 @@ public class GameScreen extends Screen {
         EdgeShape leftShape = new EdgeShape();
         leftShape.set(new Vec2(0, 0), new Vec2(0, height));
         leftGround.createFixture(leftShape, 0.0f);
-        bodies.put(leftGround,"Left Ground");
+        bodies.put(leftGround,"Left Side");
 
         //Body coinBody = world.createBody(new BodyDef());
         //CircleShape coinShape = new CircleShape();
@@ -350,7 +334,11 @@ public class GameScreen extends Screen {
             //for (int i = 0; i < index ; i++)
             //    zombieArrayList.get(i).update(delta);
             zombie1.update(delta);
-            boy.update(delta);
+            boyGun.update(delta);
+           // if(!hasGun)
+           //     boy.update(delta);
+           // else
+           ///     boyGun.update(delta);
 
             world.step(0.033f, 10, 10);
 
@@ -360,7 +348,7 @@ public class GameScreen extends Screen {
                         world.destroyBody(zombie1.getBody());
                         break;
                     case boy:
-                        world.destroyBody(boy.getBody());
+                        world.destroyBody(boyGun.getBody());
                         break;
                 }
             }
@@ -411,8 +399,12 @@ public class GameScreen extends Screen {
         //for (int i = 0; i < index; i++)
         //    zombieArrayList.get(i).paint(clock);
         zombie1.paint(clock);
+        boyGun.paint(clock);
        // zombie2.paint(clock);
-        boy.paint(clock);
+        //if(!hasGun)
+        //    boy.paint(clock);
+        //else
+        //    boyGun.paint(clock);
 
         //bullet1.paint(clock);
 
