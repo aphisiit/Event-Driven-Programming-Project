@@ -183,6 +183,7 @@ public class GameScreen extends Screen {
                         System.out.println("ZombieAttack = " + zombieAttack);
                         if(zombieAttack >= 3){
                             pause = true;
+                            ss.push(new OverScreen(ss));
                         }
                     }
                 }
