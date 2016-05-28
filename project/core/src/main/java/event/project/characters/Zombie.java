@@ -89,6 +89,11 @@ public class Zombie {
         if(hasLoaded == false){
             return;
         }
+
+        if(state == State.HIT){
+            body.applyForce(new Vec2(25,0),body.getPosition());
+        }
+
         e = e + delta;
         if (e > 150) {
             switch (state) {
