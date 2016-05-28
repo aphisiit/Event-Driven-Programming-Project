@@ -33,7 +33,10 @@ public class GameScreen extends Screen {
     private final ScreenStack ss;
     private final ImageLayer bg;
     private final ImageLayer backButton;
-    private ImageLayer heart;
+    private final ImageLayer heartLayer1;
+    private final ImageLayer heartLayer2;
+    private final ImageLayer heartLayer3;
+    private final ImageLayer heartLayer4;
     //private final ImageLayer coinLayer;
     private Zombie zombie1;
 //    private Zombie zombie2;
@@ -47,7 +50,7 @@ public class GameScreen extends Screen {
     private DebugDrawBox2D debugDrawBox2D;
 
     private int index = 0;
-    private int zombieAttack = 0;
+    public static int zombieAttack = 0;
     public static int count = 0;
     private int score = 0;
     //private List<Zombie> zombieArrayList;// = new ArrayList<Zombie>();
@@ -55,6 +58,7 @@ public class GameScreen extends Screen {
     private String debugString = "";
     private String getDebugStringCoin = "";
     private boolean destroy = false;
+    private boolean pause = false;
 
     private enum Character{
         boy,zombie;
@@ -85,9 +89,21 @@ public class GameScreen extends Screen {
         //coinLayer = graphics().createImageLayer(coin);
         //coinLayer.setTranslation(320,240f);
 
-        Image heartImage = assets().getImage("images/heart1.png");
-        heart = graphics().createImageLayer(heartImage);
-        heart.setTranslation(100,10);
+        Image heartImage1 = assets().getImage("images/heart1.png");
+        heartLayer1 = graphics().createImageLayer(heartImage1);
+        heartLayer1.setTranslation(100,10);
+
+        Image heartImage2 = assets().getImage("images/heart2.png");
+        heartLayer2 = graphics().createImageLayer(heartImage2);
+        heartLayer2.setTranslation(100,10);
+
+        Image heartImage3 = assets().getImage("images/heart3.png");
+        heartLayer3 = graphics().createImageLayer(heartImage3);
+        heartLayer3.setTranslation(100,10);
+
+        Image heartImage4 = assets().getImage("images/heart4.png");
+        heartLayer4 = graphics().createImageLayer(heartImage4);
+        heartLayer4.setTranslation(100,10);
 
         backButton.setTranslation(10,10);
         backButton.addListener(new Mouse.LayerAdapter(){
@@ -128,19 +144,6 @@ public class GameScreen extends Screen {
             }
         });
 */
-
-    }
-
-    @Override
-    public void wasShown() {
-        super.wasShown();
-        this.layer.add(bg);
-        this.layer.add(backButton);
-        this.layer.add(heart);
-        this.layer.add(boy.layer());
-        this.layer.add(zombie1.layer());
-        //this.layer.add(zombie2.layer());
-
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
@@ -160,6 +163,7 @@ public class GameScreen extends Screen {
                         getDebugStringCoin = "Score : " + score;
                         zombie1.state = Zombie.State.HIT;
                         if(zombie1.countATTK >= 2){
+                            zombie1.state = Zombie.State.DIE;
                             zombie1.layer().destroy();
                             character = Character.zombie;
                             destroy = true;
@@ -177,11 +181,8 @@ public class GameScreen extends Screen {
                         System.out.println("Zombie is Attack Boy");
                         zombieAttack++;
                         System.out.println("ZombieAttack = " + zombieAttack);
-                        if(a == boy.getBody()){
-                            a.applyForce(new Vec2(-100,0),a.getPosition());
-                        }
-                        else if(b == boy.getBody()){
-                            b.applyForce(new Vec2(-100,0),b.getPosition());
+                        if(zombieAttack >= 3){
+                            pause = true;
                         }
                     }
                 }
@@ -222,6 +223,17 @@ public class GameScreen extends Screen {
 
             }
         });
+    }
+
+    @Override
+    public void wasShown() {
+        super.wasShown();
+        this.layer.add(bg);
+        this.layer.add(backButton);
+        this.layer.add(boy.layer());
+        this.layer.add(zombie1.layer());
+        //this.layer.add(zombie2.layer());
+
 
         if (showDedugDraw) {
             CanvasImage image = graphics().createImage(
@@ -263,23 +275,42 @@ public class GameScreen extends Screen {
     }
 
     public void update(int delta){
-        super.update(delta);
-        //for (int i = 0; i < index ; i++)
-        //    zombieArrayList.get(i).update(delta);
-        zombie1.update(delta);
-        boy.update(delta);
+        if(pause == false) {
+            super.update(delta);
+            //for (int i = 0; i < index ; i++)
+            //    zombieArrayList.get(i).update(delta);
+            zombie1.update(delta);
+            boy.update(delta);
 
-        world.step(0.033f,10,10);
+            world.step(0.033f, 10, 10);
 
-        if(destroy == true){
-            switch (character){
-                case zombie: world.destroyBody(zombie1.getBody());
-                    break;
-                case boy: world.destroyBody(boy.getBody());
-                    break;
+            if (destroy == true) {
+                switch (character) {
+                    case zombie:
+                        world.destroyBody(zombie1.getBody());
+                        break;
+                    case boy:
+                        world.destroyBody(boy.getBody());
+                        break;
+                }
+            }
+
+            if (zombieAttack == 0) {
+                this.layer.add(heartLayer1);
+            } else if (zombieAttack == 1) {
+                heartLayer1.destroy();
+                this.layer.add(heartLayer2);
+            } else if (zombieAttack == 2) {
+                heartLayer2.destroy();
+                this.layer.add(heartLayer3);
+            } else if (zombieAttack == 3) {
+                heartLayer3.destroy();
+                this.layer.add(heartLayer4);
             }
         }
+        else{
 
+        }
     }
 
     @Override
