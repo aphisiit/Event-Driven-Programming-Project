@@ -15,15 +15,12 @@ import tripleplay.game.ScreenStack;
 public class OverScreen extends Screen {
 
     private ScreenStack ss;
-    private StartScreen home;
     private ImageLayer overLayer;
     private ImageLayer homeLayer;
     private ImageLayer restartLayer;
 
     public OverScreen(final ScreenStack ss){
         this.ss = ss;
-
-        home = new StartScreen(ss);
 
         Image overImage = assets().getImage("images/gameOver.png");
         overLayer = graphics().createImageLayer(overImage);

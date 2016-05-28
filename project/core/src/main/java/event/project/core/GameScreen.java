@@ -50,7 +50,7 @@ public class GameScreen extends Screen {
     private DebugDrawBox2D debugDrawBox2D;
 
     private int index = 0;
-    public static int zombieAttack = 0;
+    public static int zombieAttack;
     public static int count = 0;
     private int score = 0;
     //private List<Zombie> zombieArrayList;// = new ArrayList<Zombie>();
@@ -70,6 +70,8 @@ public class GameScreen extends Screen {
 
     public GameScreen(final ScreenStack ss){
         this.ss = ss;
+
+        zombieAttack = 0;
 
         graphics().rootLayer().clear();
         //zombieArrayList = new ArrayList<Zombie>();
