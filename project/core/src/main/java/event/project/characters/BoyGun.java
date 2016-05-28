@@ -1,6 +1,7 @@
 package event.project.characters;
 
 import event.project.core.GameScreen;
+import event.project.item.Bullet;
 import event.project.sprite.Sprite;
 import event.project.sprite.SpriteLoader;
 import org.jbox2d.collision.shapes.PolygonShape;
@@ -13,10 +14,13 @@ import playn.core.PlayN;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by aphis on 02-Apr-16.
  */
-public class Boy {
+public class BoyGun {
 
     private Sprite sprite;
     private int spriteIndex = 0;
@@ -34,8 +38,16 @@ public class Boy {
     public int e = 0;
     public int offset = 4;
 
-    public Boy(final World world,final float x,final float y){
-        sprite = SpriteLoader.getSprite("images/Boy.json");
+    private World world;
+    private GameScreen gameScreen = new GameScreen();
+
+    public List<Bullet> bulletList;
+
+    public BoyGun(final World world,final float x,final float y){
+        this.world = world;
+        bulletList = new ArrayList<Bullet>();
+
+        sprite = SpriteLoader.getSprite("images/BoyGun.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
             public void onSuccess(Sprite sprite) {
@@ -114,11 +126,12 @@ public class Boy {
                     body.applyForce(new Vec2(0f, 500f), body.getPosition());
                 }else if (event.key() == Key.J){
                     System.out.println("ATTK" + checkKey);
-                    if(checkKey == CheckKey.LEFT)
-                        state = State.ATTK;
-                    else
-                        state = State.ATTK;
-                    body.applyForce(new Vec2(50f,0f),body.getPosition());
+                    state = State.ATTK;
+
+                    Bullet bullet = new Bullet(world,(body.getPosition().x + 1.5f ) / GameScreen.M_PER_PIXEL,
+                            body.getPosition().y  / GameScreen.M_PER_PIXEL);
+
+                    gameScreen.addBullet(bullet);
                     //body.applyLinearImpulse(new Vec2(0f,-500f),new Vec2(0f,-500f));
                 }
             }

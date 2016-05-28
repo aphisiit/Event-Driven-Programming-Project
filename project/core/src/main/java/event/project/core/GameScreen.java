@@ -3,7 +3,9 @@ package event.project.core;
 import static playn.core.PlayN.*;
 
 import event.project.characters.Boy;
+import event.project.characters.BoyGun;
 import event.project.characters.Zombie;
+import event.project.item.Bullet;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.callbacks.DebugDraw;
@@ -41,7 +43,7 @@ public class GameScreen extends Screen {
     private Zombie zombie1;
 //    private Zombie zombie2;
 
-    private Boy boy;
+    private BoyGun boy;
 
     public static float M_PER_PIXEL = 1 / 26.666667f;
     private static int width = 24;
@@ -61,12 +63,45 @@ public class GameScreen extends Screen {
     private boolean pause = false;
 
     private enum Character{
-        boy,zombie;
+        boy,zombie
     }
 
     private Character character;
     private World world;
 
+    private  int shoot = 0;
+    //private Bullet bullet;
+    private static List<Bullet> bulletList;
+    private static List<Bullet> bulletDestroy;
+    public GroupLayer bulletGroup = graphics().createGroupLayer();
+
+    Bullet bullet1;
+
+    public GameScreen(){
+        ss = new ScreenStack();
+
+        Image bgImage = assets().getImage("images/gameScreenBG.png");
+        bg = graphics().createImageLayer(bgImage);
+
+        Image backImage= assets().getImage("images/back_button.png");
+        backButton = graphics().createImageLayer(backImage);
+
+        Image heartImage1 = assets().getImage("images/heart1.png");
+        heartLayer1 = graphics().createImageLayer(heartImage1);
+        heartLayer1.setTranslation(100,10);
+
+        Image heartImage2 = assets().getImage("images/heart2.png");
+        heartLayer2 = graphics().createImageLayer(heartImage2);
+        heartLayer2.setTranslation(100,10);
+
+        Image heartImage3 = assets().getImage("images/heart3.png");
+        heartLayer3 = graphics().createImageLayer(heartImage3);
+        heartLayer3.setTranslation(100,10);
+
+        Image heartImage4 = assets().getImage("images/heart4.png");
+        heartLayer4 = graphics().createImageLayer(heartImage4);
+        heartLayer4.setTranslation(100,10);
+    }
 
     public GameScreen(final ScreenStack ss){
         this.ss = ss;
@@ -123,10 +158,17 @@ public class GameScreen extends Screen {
 
         //bodies.put(coinBody,"coin");
 
-        boy = new Boy(world,100,100);
+        boy = new BoyGun(world,100,100);
 
         zombie1 = new Zombie(world,350,100);
 
+
+        //bullet1 = new Bullet(world,200,0);
+
+
+
+        bulletList = new ArrayList<Bullet>();
+        bulletDestroy = new ArrayList<Bullet>();
         //zombie2 = new Zombie(world,400,100);
 
 
@@ -152,12 +194,30 @@ public class GameScreen extends Screen {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
 
+                for(Bullet bullet: bulletList){
+                    if((contact.getFixtureA().getBody() == bullet.getBody()
+                            && contact.getFixtureB().getBody() == zombie1.getBody())
+                            || (contact.getFixtureA().getBody() == zombie1.getBody()
+                            && contact.getFixtureB().getBody() == bullet.getBody())){
+                        zombie1.countATTK++;
+                        bulletDestroy.add(bullet);
+                        if(zombie1.countATTK >= 2){
+                            zombie1.state = Zombie.State.DIE;
+                            zombie1.layer().destroy();
+                            character = Character.zombie;
+                            destroy = true;
+                            score += 10;
+                            getDebugStringCoin = "Score : " + score;
+                        }
+                    }
+                }
+
                 if(contact.getFixtureA().getBody() == boy.getBody() &&
                         contact.getFixtureB().getBody() == zombie1.getBody()
                         || contact.getFixtureB().getBody() == boy.getBody() &&
                         contact.getFixtureA().getBody() == zombie1.getBody()){
                     zombie1.state = Zombie.State.ATTK;
-                    if(boy.state == Boy.State.ATTK){
+                    if(boy.state == BoyGun.State.ATTK){
                         System.out.println("Boy is Attack.");
                         System.out.println("Count ATTK = " + zombie1.countATTK);
                         zombie1.countATTK++;
@@ -178,8 +238,8 @@ public class GameScreen extends Screen {
                         //destroy = true;
 
                     }
-                    else if(zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.IDLE ||
-                            zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.RUN){
+                    else if(zombie1.state == Zombie.State.ATTK && boy.state == BoyGun.State.IDLE ||
+                            zombie1.state == Zombie.State.ATTK && boy.state == BoyGun.State.RUN){
                         System.out.println("Zombie is Attack Boy");
                         zombieAttack++;
                         System.out.println("ZombieAttack = " + zombieAttack);
@@ -228,6 +288,10 @@ public class GameScreen extends Screen {
         });
     }
 
+    public void addBullet(Bullet bullet){
+        bulletList.add(bullet);
+    }
+
     @Override
     public void wasShown() {
         super.wasShown();
@@ -235,7 +299,10 @@ public class GameScreen extends Screen {
         this.layer.add(backButton);
         this.layer.add(boy.layer());
         this.layer.add(zombie1.layer());
+        this.layer.add(bulletGroup);
         //this.layer.add(zombie2.layer());
+
+        //this.layer.add(bullet1.layer());
 
 
         if (showDedugDraw) {
@@ -310,10 +377,25 @@ public class GameScreen extends Screen {
                 heartLayer3.destroy();
                 this.layer.add(heartLayer4);
             }
+
+            for(Bullet bullet: bulletList){
+                bullet.update(delta);
+            }
+            for (Bullet bullet: bulletList){
+                bulletGroup.add(bullet.layer());
+            }
         }
         else{
 
         }
+
+        while(!bulletDestroy.isEmpty()){
+            bulletDestroy.get(0).getBody().setActive(false);
+            bulletList.get(0).layer().destroy();
+            bulletList.remove(0);
+            world.destroyBody(bulletDestroy.remove(0).getBody());
+        }
+
     }
 
     @Override
@@ -331,5 +413,11 @@ public class GameScreen extends Screen {
         zombie1.paint(clock);
        // zombie2.paint(clock);
         boy.paint(clock);
+
+        //bullet1.paint(clock);
+
+        for(Bullet bullet: bulletList){
+            bullet.paint(clock);
+        }
     }
 }
