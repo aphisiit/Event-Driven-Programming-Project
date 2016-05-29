@@ -58,7 +58,7 @@ public class Boy {
         if(sex == 'F')
             sprite = SpriteLoader.getSprite("images/Girl.json");
         else
-            sprite = SpriteLoader.getSprite("images/Boy.json");
+            sprite = SpriteLoader.getSprite("images/test.json");
 
         sprite.addCallback(new Callback<Sprite>() {
             @Override
@@ -191,7 +191,7 @@ public class Boy {
 
         }
         else{
-            System.out.println("Boy has Gun");
+//            System.out.println("Boy has Gun");
             PlayN.keyboard().setListener(new Keyboard.Adapter(){
                 @Override
                 public void onKeyDown(Keyboard.Event event) {

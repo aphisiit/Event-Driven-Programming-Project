@@ -74,7 +74,7 @@ public class GameScreen extends Screen {
     private World world;
 
     private  int shoot = 0;
-    private boolean isHasGun = false;
+    private boolean isHasGun;
     private static List<Bullet> bulletList;
     private static List<Bullet> bulletDestroy;
     public GroupLayer bulletGroup = graphics().createGroupLayer();
@@ -156,6 +156,8 @@ public class GameScreen extends Screen {
                 pause = true;
             }
         });
+
+        isHasGun = false;
 
         boy = new Boy(world,100,100,isHasGun,sex);
         //girl = new Girl(world,100,100,isHasGun);
