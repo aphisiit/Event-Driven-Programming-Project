@@ -63,7 +63,7 @@ public class GameScreen extends Screen {
     private String debugString = "";
     private String getDebugStringCoin = "";
     private boolean destroy = false;
-    public static boolean pause = false;
+    public static boolean pause;
 
     private enum Character{
         boy,zombie
@@ -109,6 +109,7 @@ public class GameScreen extends Screen {
 
         //overScreen = new OverScreen(ss);
         //pauseScreen = new Pause(ss);
+        pause = false;
 
         zombieAttack = 0;
 
