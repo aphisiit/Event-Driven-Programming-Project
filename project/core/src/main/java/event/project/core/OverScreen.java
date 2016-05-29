@@ -5,8 +5,6 @@ import static playn.core.PlayN.*;
 import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Mouse;
-import playn.core.Pointer;
-import playn.core.util.Clock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
@@ -19,8 +17,6 @@ public class OverScreen extends Screen {
     private ImageLayer overLayer;
     private ImageLayer homeLayer;
     private ImageLayer restartLayer;
-    private GameScreen gameScreen;
-    private StartScreen startScreen;
 
     public OverScreen(final ScreenStack ss){
         System.out.println("THIS IS OVERSCREEN CLASS");
@@ -40,7 +36,7 @@ public class OverScreen extends Screen {
         homeLayer.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
-                ss.push(startScreen = new StartScreen(ss));
+                ss.push(new StartScreen(ss));
             }
         });
         restartLayer.addListener(new Mouse.LayerAdapter(){

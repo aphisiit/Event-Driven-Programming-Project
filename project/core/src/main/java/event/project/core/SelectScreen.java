@@ -41,12 +41,14 @@ public class SelectScreen extends Screen {
         selectLayer1.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
+                GameScreen.sex = 'M';
                 ss.push(new GameScreen(ss));
             }
         });
         selectLayer2.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
+                GameScreen.sex = 'F';
                 ss.push(new GameScreen(ss));
             }
         });

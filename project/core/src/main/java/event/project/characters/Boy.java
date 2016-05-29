@@ -45,7 +45,7 @@ public class Boy {
     public List<Bullet> bulletList;
 
 
-    public Boy(final World world, final float x, final float y, boolean hasGun){
+    public Boy(final World world, final float x, final float y, boolean hasGun,char sex){
         this.hasGun = hasGun;
         this.world = world;
         bulletList = new ArrayList<Bullet>();
@@ -55,7 +55,11 @@ public class Boy {
         else
             state = State.IDLEG;
 
-        sprite = SpriteLoader.getSprite("images/test.json");
+        if(sex == 'F')
+            sprite = SpriteLoader.getSprite("images/Girl.json");
+        else
+            sprite = SpriteLoader.getSprite("images/Boy.json");
+
         sprite.addCallback(new Callback<Sprite>() {
             @Override
             public void onSuccess(Sprite sprite) {
@@ -187,6 +191,7 @@ public class Boy {
 
         }
         else{
+            System.out.println("Boy has Gun");
             PlayN.keyboard().setListener(new Keyboard.Adapter(){
                 @Override
                 public void onKeyDown(Keyboard.Event event) {

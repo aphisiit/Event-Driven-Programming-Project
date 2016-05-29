@@ -42,9 +42,10 @@ public class GameScreen extends Screen {
     private OverScreen overScreen;
 //    private Zombie zombie2;
 
-    private Boy boyGun;
-    //private BoyGun boyGun;
-    //private Boy boy;
+    private Boy boy;
+    public static char sex;
+    //private Girl girl;
+
     private boolean hasGun = false;
     //private B
 
@@ -156,7 +157,8 @@ public class GameScreen extends Screen {
             }
         });
 
-        boyGun = new Boy(world,100,100,isHasGun);
+        boy = new Boy(world,100,100,isHasGun,sex);
+        //girl = new Girl(world,100,100,isHasGun);
 
         zombie1 = new Zombie(world,500,100);
 
@@ -205,12 +207,12 @@ public class GameScreen extends Screen {
                     }
                 }
 
-                if(contact.getFixtureA().getBody() == boyGun.getBody() &&
+                if(contact.getFixtureA().getBody() == boy.getBody() &&
                         contact.getFixtureB().getBody() == zombie1.getBody()
-                        || contact.getFixtureB().getBody() == boyGun.getBody() &&
+                        || contact.getFixtureB().getBody() == boy.getBody() &&
                         contact.getFixtureA().getBody() == zombie1.getBody()){
                     zombie1.state = Zombie.State.ATTK;
-                    if(boyGun.state == Boy.State.ATTK){
+                    if(boy.state == Boy.State.ATTK){
                         System.out.println("Boy is Attack.");
                         System.out.println("Count ATTK = " + zombie1.countATTK);
                         zombie1.countATTK++;
@@ -233,8 +235,8 @@ public class GameScreen extends Screen {
                         //destroy = true;
 
                     }
-                    else if(zombie1.state == Zombie.State.ATTK && boyGun.state == Boy.State.IDLE ||
-                            zombie1.state == Zombie.State.ATTK && boyGun.state == Boy.State.RUN){
+                    else if(zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.IDLE ||
+                            zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.RUN){
                         System.out.println("Zombie is Attack Boy");
                         zombieAttack++;
                         System.out.println("ZombieAttack = " + zombieAttack);
@@ -294,7 +296,8 @@ public class GameScreen extends Screen {
         this.layer.add(pauseButton);
 
         this.layer.add(zombie1.layer());
-        this.layer.add(boyGun.layer());
+        this.layer.add(boy.layer());
+        //this.layer.add(girl.layer());
         this.layer.add(bulletGroup);
 
 
@@ -343,7 +346,9 @@ public class GameScreen extends Screen {
             //for (int i = 0; i < index ; i++)
             //    zombieArrayList.get(i).update(delta);
             zombie1.update(delta);
-            boyGun.update(delta);
+            boy.update(delta);
+            //girl.update(delta);
+
            // if(!hasGun)
            //     boy.update(delta);
            // else
@@ -357,7 +362,7 @@ public class GameScreen extends Screen {
                         world.destroyBody(zombie1.getBody());
                         break;
                     case boy:
-                        world.destroyBody(boyGun.getBody());
+                        world.destroyBody(boy.getBody());
                         break;
                 }
             }
@@ -382,7 +387,7 @@ public class GameScreen extends Screen {
                 bulletGroup.add(bullet.layer());
             }
 
-            boyGun.updateHasGun(isHasGun);
+            boy.updateHasGun(isHasGun);
 
             while(!bulletDestroy.isEmpty()){
                 bulletDestroy.get(0).getBody().setActive(false);
@@ -409,7 +414,8 @@ public class GameScreen extends Screen {
         //for (int i = 0; i < index; i++)
         //    zombieArrayList.get(i).paint(clock);
         zombie1.paint(clock);
-        boyGun.paint(clock);
+        boy.paint(clock);
+        //girl.paint(clock);
        // zombie2.paint(clock);
         //if(!hasGun)
         //    boy.paint(clock);
