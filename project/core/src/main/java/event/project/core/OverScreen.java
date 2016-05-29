@@ -18,8 +18,11 @@ public class OverScreen extends Screen {
     private ImageLayer overLayer;
     private ImageLayer homeLayer;
     private ImageLayer restartLayer;
+    private GameScreen gameScreen;
+    private StartScreen startScreen;
 
     public OverScreen(final ScreenStack ss){
+        System.out.println("THIS IS OVERSCREEN CLASS");
         this.ss = ss;
 
         Image overImage = assets().getImage("images/gameOver.png");

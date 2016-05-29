@@ -30,13 +30,16 @@ import java.util.List;
 public class GameScreen extends Screen {
     private final ScreenStack ss;
     private final ImageLayer bg;
-    private final ImageLayer backButton;
+    private final ImageLayer pauseButton;
     private final ImageLayer heartLayer1;
     private final ImageLayer heartLayer2;
     private final ImageLayer heartLayer3;
     private final ImageLayer heartLayer4;
     //private final ImageLayer coinLayer;
     private Zombie zombie1;
+
+    private Pause pauseScreen;
+    private OverScreen overScreen;
 //    private Zombie zombie2;
 
     private Boy boyGun;
@@ -60,7 +63,7 @@ public class GameScreen extends Screen {
     private String debugString = "";
     private String getDebugStringCoin = "";
     private boolean destroy = false;
-    private boolean pause = false;
+    public static boolean pause = false;
 
     private enum Character{
         boy,zombie
@@ -70,7 +73,7 @@ public class GameScreen extends Screen {
     private World world;
 
     private  int shoot = 0;
-    //private Bullet bullet;
+    private boolean isHasGun = false;
     private static List<Bullet> bulletList;
     private static List<Bullet> bulletDestroy;
     public GroupLayer bulletGroup = graphics().createGroupLayer();
@@ -81,8 +84,8 @@ public class GameScreen extends Screen {
         Image bgImage = assets().getImage("images/gameScreenBG.png");
         bg = graphics().createImageLayer(bgImage);
 
-        Image backImage= assets().getImage("images/back_button.png");
-        backButton = graphics().createImageLayer(backImage);
+        Image backImage= assets().getImage("images/pauseButton.png");
+        pauseButton = graphics().createImageLayer(backImage);
 
         Image heartImage1 = assets().getImage("images/heart1.png");
         heartLayer1 = graphics().createImageLayer(heartImage1);
@@ -104,6 +107,9 @@ public class GameScreen extends Screen {
     public GameScreen(final ScreenStack ss){
         this.ss = ss;
 
+        //overScreen = new OverScreen(ss);
+        //pauseScreen = new Pause(ss);
+
         zombieAttack = 0;
 
         graphics().rootLayer().clear();
@@ -117,8 +123,8 @@ public class GameScreen extends Screen {
         Image bgImage = assets().getImage("images/gameScreenBG.png");
         bg = graphics().createImageLayer(bgImage);
 
-        Image backImage= assets().getImage("images/back_button.png");
-        backButton = graphics().createImageLayer(backImage);
+        Image backImage= assets().getImage("images/pauseButton.png");
+        pauseButton = graphics().createImageLayer(backImage);
 
         //Image coin = assets().getImage("images/coin.png");
         //coinLayer = graphics().createImageLayer(coin);
@@ -140,15 +146,16 @@ public class GameScreen extends Screen {
         heartLayer4 = graphics().createImageLayer(heartImage4);
         heartLayer4.setTranslation(100,10);
 
-        backButton.setTranslation(10,10);
-        backButton.addListener(new Mouse.LayerAdapter(){
+        pauseButton.setTranslation(10,10);
+        pauseButton.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
-                ss.remove(ss.top()); // <- Pop Screen
+                ss.push(new Pause(ss)); // <- Pop Screen
+                pause = true;
             }
         });
 
-        boyGun = new Boy(world,100,100,false);
+        boyGun = new Boy(world,100,100,isHasGun);
 
         zombie1 = new Zombie(world,500,100);
 
@@ -210,6 +217,7 @@ public class GameScreen extends Screen {
                         getDebugStringCoin = "Score : " + score;
                         zombie1.state = Zombie.State.HIT;
                         if(zombie1.countATTK >= 2){
+                            isHasGun = true;
                             zombie1.state = Zombie.State.DIE;
                             zombie1.layer().destroy();
                             character = Character.zombie;
@@ -282,7 +290,7 @@ public class GameScreen extends Screen {
     public void wasShown() {
         super.wasShown();
         this.layer.add(bg);
-        this.layer.add(backButton);
+        this.layer.add(pauseButton);
 
         this.layer.add(zombie1.layer());
         this.layer.add(boyGun.layer());
@@ -372,18 +380,19 @@ public class GameScreen extends Screen {
             for (Bullet bullet: bulletList){
                 bulletGroup.add(bullet.layer());
             }
+
+            boyGun.updateHasGun(isHasGun);
+
+            while(!bulletDestroy.isEmpty()){
+                bulletDestroy.get(0).getBody().setActive(false);
+                bulletList.get(0).layer().destroy();
+                bulletList.remove(0);
+                world.destroyBody(bulletDestroy.remove(0).getBody());
+            }
         }
         else{
 
         }
-
-        while(!bulletDestroy.isEmpty()){
-            bulletDestroy.get(0).getBody().setActive(false);
-            bulletList.get(0).layer().destroy();
-            bulletList.remove(0);
-            world.destroyBody(bulletDestroy.remove(0).getBody());
-        }
-
     }
 
     @Override

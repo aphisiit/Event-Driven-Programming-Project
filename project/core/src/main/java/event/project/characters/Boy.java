@@ -143,7 +143,7 @@ public class Boy {
             e = 0;
         }
 
-        if(!hasGun){
+        if(hasGun == false){
             PlayN.keyboard().setListener(new Keyboard.Adapter(){
                 @Override
                 public void onKeyDown(Keyboard.Event event) {
