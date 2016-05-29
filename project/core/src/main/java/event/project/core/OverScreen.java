@@ -6,6 +6,7 @@ import playn.core.Image;
 import playn.core.ImageLayer;
 import playn.core.Mouse;
 import playn.core.Pointer;
+import playn.core.util.Clock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
 
@@ -39,13 +40,14 @@ public class OverScreen extends Screen {
         homeLayer.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
-                ss.push(new StartScreen(ss));
+                ss.push(startScreen = new StartScreen(ss));
             }
         });
         restartLayer.addListener(new Mouse.LayerAdapter(){
             @Override
             public void onMouseUp(Mouse.ButtonEvent event) {
                 ss.push(new GameScreen(ss));
+
             }
         });
     }
