@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by aphis on 02-Apr-16.
  */
-public class Zombie {
+public class Zombie3 {
 
     private Sprite sprite;
     private int spriteIndex = 0;
@@ -33,10 +33,10 @@ public class Zombie {
     public int e = 0;
     public int offset = 4;
 
-    public Zombie(final World world,final float x,final float y){
+    public Zombie3(final World world,final float x,final float y){
         //walk(walk);
 
-        sprite = SpriteLoader.getSprite("images/zombie.json");
+        sprite = SpriteLoader.getSprite("images/zombie3.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
             public void onSuccess(Sprite sprite) {

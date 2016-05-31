@@ -4,6 +4,8 @@ import static playn.core.PlayN.*;
 
 import event.project.characters.Boy;
 import event.project.characters.Zombie;
+import event.project.characters.Zombie2;
+import event.project.characters.Zombie3;
 import event.project.item.Bullet;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
@@ -36,17 +38,18 @@ public class GameScreen extends Screen {
     private final ImageLayer heartLayer3;
     private final ImageLayer heartLayer4;
     //private final ImageLayer coinLayer;
-    private Zombie zombie1;
+
 
     private Pause pauseScreen;
     private OverScreen overScreen;
 
     private Boy boy;
-    public static char sex;
-    //private Girl girl;
+    private Zombie zombie1;
+    private Zombie2 zombie2;
+    private Zombie3 zombie3;
 
-    private boolean hasGun = false;
-    //private B
+
+    public static char sex;
 
     public static float M_PER_PIXEL = 1 / 26.666667f;
     private static int width = 24;
@@ -163,6 +166,8 @@ public class GameScreen extends Screen {
         //girl = new Girl(world,100,100,isHasGun);
 
         zombie1 = new Zombie(world,500,100);
+        zombie2 = new Zombie2(world,300,100);
+        zombie3 = new Zombie3(world,400,100);
 
         bulletList = new ArrayList<Bullet>();
         bulletDestroy = new ArrayList<Bullet>();
@@ -190,6 +195,8 @@ public class GameScreen extends Screen {
             public void beginContact(Contact contact) {
                 Body a = contact.getFixtureA().getBody();
                 Body b = contact.getFixtureB().getBody();
+
+                System.out.println("offset = " + zombie1.offset);
 
                 for(Bullet bullet: bulletList){
                     if((contact.getFixtureA().getBody() == bullet.getBody()
@@ -220,21 +227,17 @@ public class GameScreen extends Screen {
                         debugString = "Boy is Attack Zombie.";
                         getDebugStringCoin = "Score : " + score;
                         zombie1.state = Zombie.State.HIT;
-                        if(zombie1.countATTK >= 2){
+                        if(zombie1.countATTK > 2){
                             isHasGun = true;
                             zombie1.state = Zombie.State.DIE;
-                            zombie1.layer().destroy();
-                            character = Character.zombie;
+                            //if(zombie1.offset == 19){
+                                zombie1.layer().destroy();
+                                character = Character.zombie;
+                            //}
                             destroy = true;
                             score += 10;
                             getDebugStringCoin = "Score : " + score;
                         }
-                        //boyGun.updateHasGun(true);
-                        //b.applyForce(new Vec2(80f,-100f),b.getPosition());
-                        //zombie1.layer().destroy(); //Destroy zombie
-                        //character = Character.zombie;
-                        //destroy = true;
-
                     }
                     else if(zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.IDLE ||
                             zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.RUN){
@@ -253,23 +256,7 @@ public class GameScreen extends Screen {
                 }else {
                     boy.checkJump = false;
                 }
-/*                else if(contact.getFixtureA().getBody() == boy.getBody() &&
-                        contact.getFixtureB().getBody() == zombie2.getBody()
-                        || contact.getFixtureB().getBody() == boy.getBody() &&
-                        contact.getFixtureA().getBody() == zombie2.getBody()){
-                    zombie2.state = Zombie.State.ATTK;
-                    if(boy.state == Boy.State.ATTK){
-                        System.out.println("Boy is Attack.");
-                        score += 10;
-                        debugString = bodies.get(a) + " contacted with " + bodies.get(b);
-                        getDebugStringCoin = "Score : " + score;
-                        b.applyForce(new Vec2(80f,-100f),b.getPosition());
-                        zombie2.layer().destroy(); //Destroy zombie
-                        destroy = true;
-                        character = Character.zombie;
-                    }
-                }
-*/
+
                 System.out.println(bodies.get(a) + " Attack " + bodies.get(b));
                 System.out.println("debugString : " + debugString);
                 System.out.println("getDebugStringCoin : " + getDebugStringCoin);
@@ -304,7 +291,8 @@ public class GameScreen extends Screen {
 
         this.layer.add(zombie1.layer());
         this.layer.add(boy.layer());
-        //this.layer.add(girl.layer());
+        this.layer.add(zombie2.layer());
+        this.layer.add(zombie3.layer());
         this.layer.add(bulletGroup);
 
 
@@ -354,6 +342,9 @@ public class GameScreen extends Screen {
             //    zombieArrayList.get(i).update(delta);
             zombie1.update(delta);
             boy.update(delta);
+            zombie2.update(delta);
+            zombie3.update(delta);
+
 /*
             if (boy.checkJump == true) {
                 getPositionBoy = boy.getBody().getPosition().y;
@@ -429,6 +420,8 @@ public class GameScreen extends Screen {
         //    zombieArrayList.get(i).paint(clock);
         zombie1.paint(clock);
         boy.paint(clock);
+        zombie2.paint(clock);
+        zombie3.paint(clock);
         //girl.paint(clock);
        // zombie2.paint(clock);
         //if(!hasGun)
