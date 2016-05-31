@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by aphis on 02-Apr-16.
  */
-public class Zombie {
+public class Zombie2 {
 
     private Sprite sprite;
     private int spriteIndex = 0;
@@ -27,16 +27,16 @@ public class Zombie {
     public int countATTK = 0;
 
     public enum State{
-        IDLE,WALK,ATTK,HIT,DIE;
+        IDLE,WALK,DIE;
     }
     public State state = State.IDLE;
     public int e = 0;
     public int offset = 4;
 
-    public Zombie(final World world,final float x,final float y){
+    public Zombie2(final World world,final float x,final float y){
         //walk(walk);
 
-        sprite = SpriteLoader.getSprite("images/zombie.json");
+        sprite = SpriteLoader.getSprite("images/zombie2.json");
         sprite.addCallback(new Callback<Sprite>() {
             @Override
             public void onSuccess(Sprite sprite) {
@@ -85,13 +85,9 @@ public class Zombie {
         body.setTransform(new Vec2(x,y), 0f);
         return body;
     }
-    public void update(int delta){
-        if(hasLoaded == false){
+    public void update(int delta) {
+        if (hasLoaded == false) {
             return;
-        }
-
-        if(state == State.HIT){
-            body.applyForce(new Vec2(25,0),body.getPosition());
         }
 
         System.out.println("offset =  " + offset);
@@ -105,20 +101,11 @@ public class Zombie {
                 case WALK:
                     offset = 4;
                     break;
-                case ATTK:
-                    offset = 8 ;
-                    if(spriteIndex == 11){
+                case DIE:
+                    offset = 8;
+                    if (spriteIndex == 11) {
                         state = State.IDLE;
                     }
-                    break;
-                case  HIT:
-                    offset = 12;
-                    if(spriteIndex == 15){
-                        state = State.IDLE;
-                    }
-                    break;
-                case  DIE:
-                    offset = 16;
                     break;
             }
             spriteIndex = offset + ((spriteIndex + 1) % 4);
