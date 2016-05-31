@@ -40,7 +40,6 @@ public class GameScreen extends Screen {
 
     private Pause pauseScreen;
     private OverScreen overScreen;
-//    private Zombie zombie2;
 
     private Boy boy;
     public static char sex;
@@ -56,6 +55,7 @@ public class GameScreen extends Screen {
     private DebugDrawBox2D debugDrawBox2D;
 
     private int index = 0;
+    private float getPositionBoy = 0.0f;
     public static int zombieAttack;
     public static int count = 0;
     private int score = 0;
@@ -208,7 +208,6 @@ public class GameScreen extends Screen {
                         }
                     }
                 }
-
                 if(contact.getFixtureA().getBody() == boy.getBody() &&
                         contact.getFixtureB().getBody() == zombie1.getBody()
                         || contact.getFixtureB().getBody() == boy.getBody() &&
@@ -247,6 +246,12 @@ public class GameScreen extends Screen {
                             ss.push(new OverScreen(ss));
                         }
                     }
+                }
+                if((bodies.get(a) == "Boy" && bodies.get(b) == "ground")
+                        || (bodies.get(a) == "ground" && bodies.get(b) == "Boy")){
+                    boy.checkJump = true;
+                }else {
+                    boy.checkJump = false;
                 }
 /*                else if(contact.getFixtureA().getBody() == boy.getBody() &&
                         contact.getFixtureB().getBody() == zombie2.getBody()
@@ -349,13 +354,20 @@ public class GameScreen extends Screen {
             //    zombieArrayList.get(i).update(delta);
             zombie1.update(delta);
             boy.update(delta);
-            //girl.update(delta);
+/*
+            if (boy.checkJump == true) {
+                getPositionBoy = boy.getBody().getPosition().y;
+                if(getPositionBoy > 12.7)
+                    boy.checkJump = false;
+            }
 
-           // if(!hasGun)
-           //     boy.update(delta);
-           // else
-           ///     boyGun.update(delta);
-
+            if(boy.state == Boy.State.JUMP || boy.state == Boy.State.JUMPG){
+                boy.checkJump = true;
+            }
+            else{
+                boy.checkJump = false;
+            }
+*/
             world.step(0.033f, 10, 10);
 
             if (destroy == true) {

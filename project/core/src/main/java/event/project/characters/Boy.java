@@ -27,6 +27,7 @@ public class Boy {
     private boolean hasLoaded = false;
     private Body body;
     private boolean hasGun = false;
+    public static boolean checkJump = false;
 
     public enum State{
         IDLE,RUN,JUMP,ATTK,IDLEG,RUNG,JUMPG,ATTKG
@@ -161,9 +162,10 @@ public class Boy {
                         System.out.println("RIGHT " + checkKey);
                         state = State.RUN;
                         walk();
-                    }else if(event.key() == Key.W) {
+                    }else if(event.key() == Key.W && checkJump == false) {
                         state = State.JUMP;
                         body.applyForce(new Vec2(0f, -500f), body.getPosition());
+                        checkJump =true;
                     }else if(event.key() == Key.S){
                         if (checkKey == CheckKey.LEFT)
                             state = State.IDLE;
@@ -205,9 +207,10 @@ public class Boy {
                         System.out.println("RIGHT " + checkKey);
                         state = State.RUNG;
                         walk();
-                    }else if(event.key() == Key.W) {
+                    }else if(event.key() == Key.W && checkJump == false) {
                         state = State.JUMPG;
                         body.applyForce(new Vec2(0f, -500f), body.getPosition());
+                        checkJump = true;
                     }else if(event.key() == Key.S){
                         if (checkKey == CheckKey.LEFT)
                             state = State.IDLEG;
