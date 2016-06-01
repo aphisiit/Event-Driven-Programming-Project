@@ -104,6 +104,8 @@ public class Zombie {
                     break;
                 case WALK:
                     offset = 4;
+                    body.applyForce(new Vec2(-30f, 0f), body.getPosition());
+                    walk(true);
                     break;
                 case ATTK:
                     offset = 8 ;
@@ -138,12 +140,12 @@ public class Zombie {
     {
         if(walk) {
             state = State.WALK;
-            body.applyForce(new Vec2(-10f, 0f), body.getPosition());
+            body.applyForce(new Vec2(-30f, 0f), body.getPosition());
         }else{
             state = State.IDLE;
         }
-
     }
+
     public Body getBody() {
         return body;
     }

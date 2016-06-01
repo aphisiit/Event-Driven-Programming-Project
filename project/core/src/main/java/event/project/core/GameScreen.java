@@ -21,6 +21,7 @@ import playn.core.*;
 import playn.core.util.Clock;
 import tripleplay.game.Screen;
 import tripleplay.game.ScreenStack;
+import tripleplay.ui.Group;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +63,7 @@ public class GameScreen extends Screen {
     public static int zombieAttack;
     public static int count = 0;
     private int score = 0;
+    private boolean checkzombie2 = false;
     //private List<Zombie> zombieArrayList;// = new ArrayList<Zombie>();
     public static HashMap<Body,String> bodies = new HashMap<Body, String>();
     private String debugString = "";
@@ -166,30 +168,17 @@ public class GameScreen extends Screen {
         //girl = new Girl(world,100,100,isHasGun);
 
         zombie1 = new Zombie(world,500,100);
-        zombie2 = new Zombie2(world,300,100);
-        zombie3 = new Zombie3(world,400,100);
+        //zombie2.layer().setVisible(false);
+        //zombie2.getBody().setActive(false);
+
+
+        //zombie3 = new Zombie3(world,400,100);
+        zombie1.state = Zombie.State.WALK;
 
         bulletList = new ArrayList<Bullet>();
         bulletDestroy = new ArrayList<Bullet>();
-        //zombie2 = new Zombie(world,400,100);
+        zombie2 = new Zombie2(world,600f,100f);
 
-
-
-        /*
-        mouse().setListener(new Mouse.Adapter() {
-            @Override
-            public void onMouseUp(Mouse.ButtonEvent event) {
-                zombieArrayList.add(index, new Zombie(world, event.x(), event.y()));
-                //layer.add(zombieArrayList.get(index).layer());
-                index++;
-
-                for (int i = 0; i < index; i++) {
-                    //    this.layer.add(zombieArrayList.get(i).layer());
-                    graphics().rootLayer().add(zombieArrayList.get(i).layer());
-                }
-            }
-        });
-*/
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
@@ -230,13 +219,14 @@ public class GameScreen extends Screen {
                         if(zombie1.countATTK > 2){
                             isHasGun = true;
                             zombie1.state = Zombie.State.DIE;
-                            //if(zombie1.offset == 19){
-                                zombie1.layer().destroy();
-                                character = Character.zombie;
-                            //}
+                            zombie1.layer().destroy();
+                            character = Character.zombie;
                             destroy = true;
                             score += 10;
                             getDebugStringCoin = "Score : " + score;
+                            checkzombie2 = true;
+                            //zombie2.layer().setVisible(true);
+                            //zombie2.getBody().setActive(true);
                         }
                     }
                     else if(zombie1.state == Zombie.State.ATTK && boy.state == Boy.State.IDLE ||
@@ -291,8 +281,8 @@ public class GameScreen extends Screen {
 
         this.layer.add(zombie1.layer());
         this.layer.add(boy.layer());
-        this.layer.add(zombie2.layer());
-        this.layer.add(zombie3.layer());
+
+        //this.layer.add(zombie3.layer());
         this.layer.add(bulletGroup);
 
 
@@ -326,6 +316,12 @@ public class GameScreen extends Screen {
         leftGround.createFixture(leftShape, 0.0f);
         bodies.put(leftGround,"Left Side");
 
+        Body rightGround = world.createBody(new BodyDef());
+        EdgeShape rightShape = new EdgeShape();
+        rightShape.set(new Vec2(width, 0), new Vec2(width, height));
+        rightGround.createFixture(rightShape, 0.0f);
+        bodies.put(leftGround,"Left Side");
+
         //Body coinBody = world.createBody(new BodyDef());
         //CircleShape coinShape = new CircleShape();
         //coinShape.setRadius(0.45f);
@@ -342,23 +338,11 @@ public class GameScreen extends Screen {
             //    zombieArrayList.get(i).update(delta);
             zombie1.update(delta);
             boy.update(delta);
-            zombie2.update(delta);
-            zombie3.update(delta);
-
-/*
-            if (boy.checkJump == true) {
-                getPositionBoy = boy.getBody().getPosition().y;
-                if(getPositionBoy > 12.7)
-                    boy.checkJump = false;
+            if(checkzombie2 == true) {
+                this.layer.add(zombie2.layer());
+                zombie2.update(delta);
             }
-
-            if(boy.state == Boy.State.JUMP || boy.state == Boy.State.JUMPG){
-                boy.checkJump = true;
-            }
-            else{
-                boy.checkJump = false;
-            }
-*/
+            //zombie3.update(delta);
             world.step(0.033f, 10, 10);
 
             if (destroy == true) {
@@ -416,20 +400,13 @@ public class GameScreen extends Screen {
             debugDrawBox2D.getCanvas().drawText(getDebugStringCoin,100f,100f);
             world.drawDebugData();
         }
-        //for (int i = 0; i < index; i++)
-        //    zombieArrayList.get(i).paint(clock);
+
         zombie1.paint(clock);
         boy.paint(clock);
-        zombie2.paint(clock);
-        zombie3.paint(clock);
-        //girl.paint(clock);
-       // zombie2.paint(clock);
-        //if(!hasGun)
-        //    boy.paint(clock);
-        //else
-        //    boyGun.paint(clock);
-
-        //bullet1.paint(clock);
+        if(checkzombie2 == true) {
+            zombie2.paint(clock);
+        }
+        //zombie3.paint(clock);
 
         for(Bullet bullet: bulletList){
             bullet.paint(clock);
